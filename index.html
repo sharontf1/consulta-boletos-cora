@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta de Boletos</title>
+</head>
+<body>
+  <h2>Verificação de Boletos em Atraso</h2>
+  <input type="text" id="nome" placeholder="Digite o nome do cliente">
+  <button onclick="buscarBoletos()">Buscar</button>
+  <div id="resultado"></div>
+
+  <script>
+    async function buscarBoletos() {
+      const nome = document.getElementById('nome').value;
+      const resposta = await fetch('/buscar-boletos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome })
+      });
+      const dados = await resposta.json();
+
+      let html = '';
+      if (dados.boletosAtrasados.length > 0) {
+        html = '<h3>Boletos em Atraso:</h3><ul>';
+        dados.boletosAtrasados.forEach(boleto => {
+          html += `<li>Vencimento: ${boleto.due_date}, Valor: R$${boleto.amount / 100}</li>`;
+        });
+        html += '</ul>';
+      } else {
+        html = '<p>Nenhum boleto em atraso encontrado.</p>';
+      }
+      document.getElementById('resultado').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
